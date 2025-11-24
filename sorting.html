@@ -1,0 +1,79 @@
+<html>
+    <head>
+        <title>Bubblesort</title>
+    </head>
+
+    <body>
+        <canvas id="myCanvas" width="200" height="200" style="border:1px solid #000000;"></canvas> <p></p>
+
+        <button onclick="start()">Start</button>
+
+        <script>
+            let num_list = [];
+
+            function add_random_numbers(){
+                for (var i = 0; i < 200; i++){
+                    item = Math.floor(Math.random() * (200));
+                    num_list.push(item);
+                }
+            }
+            
+            function render(){
+                const canvas = document.getElementById("myCanvas");
+			    const ctx = canvas.getContext("2d");
+			    // clear the screen
+			    ctx.fillStyle = "white"; 
+			    ctx.fillRect(0, 0, 200, 200);
+
+                // loop through list and render bar
+                var bar_width = 1
+
+                for (var i = 0; i < num_list.length; i++) {
+                    if (i % 2 > 0){
+                        ctx.fillStyle = "red"; 
+                    }
+                    var bar_height = num_list[i]
+                    ctx.fillRect(i*bar_width, 200-bar_height, bar_width, bar_height);
+                }
+            }
+
+            function sleep(ms) {
+                return new Promise(resolve => setTimeout(resolve, ms));
+            }
+
+            async function bubble_sort(delay){
+                var swap = true;
+                var n = num_list.length
+                while (swap){
+                    swap = false;
+                    for (var i = 0; i < n; i++){
+                        if (num_list[i] > num_list[i+1]){
+                            // -- swap i and i + 1
+                            var temp = num_list[i]; 
+                            num_list[i] = num_list[i + 1];
+                            num_list[i + 1] = temp;
+                            // finish swap --
+                            swap = true;
+                            render()
+                            await sleep(delay)
+                        }
+                    }
+                    n--
+                }
+            }
+
+            async function insertion_sort(delay){
+                
+            }
+
+            async function start(){
+                add_random_numbers();
+                await bubble_sort(5);
+                console.log(num_list);
+            }
+
+        </script>
+
+    </body>
+
+</html>
