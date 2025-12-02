@@ -1,75 +1,131 @@
 <html>
     <head>
-        <title>Bubblesort</title>
+        <link rel="stylesheet" type="text/css" href="dark.css"></link>
+        <title>SORTING</title>
     </head>
 
     <body>
-        <canvas id="myCanvas" width="200" height="200" style="border:1px solid #000000;"></canvas> <p></p>
+        <h1 id="heading">Current Algorithm: None</h1>
+        <canvas id="myCanvas" width="1000" height="200" style="border:1px solid #000000;"></canvas> <p></p>
 
-        <button onclick="start()">Start</button>
+		<button onclick="start()">Start</button>
 
         <script>
             let num_list = [];
 
             function add_random_numbers(){
-                for (var i = 0; i < 200; i++){
+                for (var i = 0; i < 100; i++){
                     item = Math.floor(Math.random() * (200));
                     num_list.push(item);
                 }
             }
             
-            function render(){
+            function render(sorted, current){
                 const canvas = document.getElementById("myCanvas");
 			    const ctx = canvas.getContext("2d");
 			    // clear the screen
 			    ctx.fillStyle = "white"; 
-			    ctx.fillRect(0, 0, 200, 200);
+			    ctx.fillRect(0, 0, 1000, 200);
 
                 // loop through list and render bar
-                var bar_width = 1
+                var bar_width = 10
 
-                for (var i = 0; i < num_list.length; i++) {
-                    if (i % 2 > 0){
-                        ctx.fillStyle = "red"; 
+                for (var i = 0; i < sorted.length; i++) {
+                    if (i === current)
+                    {
+                        if (i % 2 > 0){
+                            ctx.fillStyle = "green"; 
+                        }
+                        else
+                        {
+                            ctx.fillStyle = "darkGreen"; 
+                        }
                     }
-                    var bar_height = num_list[i]
+                    else
+                    {
+                        if (i % 2 > 0){
+                            ctx.fillStyle = "red"; 
+                        }
+                        else
+                        {
+                            ctx.fillStyle = "darkRed"; 
+                        }
+                    }
+                    var bar_height = sorted[i]
                     ctx.fillRect(i*bar_width, 200-bar_height, bar_width, bar_height);
                 }
             }
 
-            function sleep(ms) {
+            function sleep(ms) { // im ngl idrk whats going on here this is just a copy paste function lol
                 return new Promise(resolve => setTimeout(resolve, ms));
             }
 
-            async function bubble_sort(delay){
+            async function bubble_sort(to_sort, delay=5){
+                // set heading to say bubble sort
+                var headingV = document.getElementById("heading");
+			    headingV.textContent="Current Algorithm: Bubble Sort";
+
+                // bubble sort here
                 var swap = true;
-                var n = num_list.length
+                var n = to_sort.length
+				var sorting = [... to_sort]
+                var operations = 0;
+
                 while (swap){
                     swap = false;
                     for (var i = 0; i < n; i++){
-                        if (num_list[i] > num_list[i+1]){
+                        if (sorting[i] > sorting[i+1]){ operations++;
                             // -- swap i and i + 1
-                            var temp = num_list[i]; 
-                            num_list[i] = num_list[i + 1];
-                            num_list[i + 1] = temp;
+                            var temp = sorting[i]; operations++;
+                            sorting[i] = sorting[i + 1]; operations++;
+                            sorting[i + 1] = temp; operations++;
                             // finish swap --
                             swap = true;
-                            render()
+                            // these two lines in the loop to show every single swap - takes forever to run though
+                            render(sorting, i)
                             await sleep(delay)
                         }
                     }
+					// these two lines outside the loop to show just every pass
+                    //render(sorting, i)
+                    //await sleep(delay)
                     n--
                 }
+                window.alert(`Bubble sort finished in ${operations} operations.`);
             }
 
-            async function insertion_sort(delay){
-                
+            async function insertion_sort(to_sort, delay=5){
+                // set heading to say insertion sort
+                var headingV = document.getElementById("heading");
+			    headingV.textContent="Current Algorithm: Insertion Sort";
+
+                // insertion sort here
+                var sorting = [... to_sort]; 
+                var n = to_sort.length;
+                var operations = 0;
+
+				for (var i = 1; i < n; i++){
+                    var current = sorting[i];
+                    var j = i;
+                    while (j > 0 && sorting[j-1] > current){ operations++;
+                        sorting[j] = sorting[j-1]; operations++;
+                        render(sorting, j); // make it render after every comparison - sloow
+                        await sleep(delay);
+                        j--;
+                    }
+                    sorting[j] = current; operations++;
+                    // re-render for every insertion/swap
+                    //render(sorting, i);
+                    //await sleep(delay);
+                }
+                window.alert(`Insertion sort finished in ${operations} operations.`);
             }
 
             async function start(){
                 add_random_numbers();
-                await bubble_sort(5);
-                console.log(num_list);
+                await insertion_sort(num_list, 0.1);
+                //await sleep(1000) // a dealy between each
+                await bubble_sort(num_list, 0.1);
             }
 
         </script>
